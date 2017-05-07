@@ -1,9 +1,12 @@
 package id.arieridwan.coffeshop;
 
+import android.content.Intent;
 import android.content.pm.ProviderInfo;
+import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //spiner
+        categories.add("");
         categories.add("Coffe");
         categories.add("Tea");
         categories.add("Milk");
@@ -124,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (i) {
                     case R.id.mFlavorChocolate:
                         Toast.makeText(MainActivity.this, "Chocolate flavor", Toast.LENGTH_SHORT).show();
-
                         break;
                     case R.id.mFlavorMoccha:
                         Toast.makeText(MainActivity.this, "Moccha flavor", Toast.LENGTH_SHORT).show();
@@ -132,7 +135,32 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendEmail();
+            }
+        });
     }
 
+    protected void sendEmail() {
+        String[] TO = {"arie@gits.co.id"};
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Order");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Nama saya " + mTextNama.getText() + ", saya memesan sebuah "
+                + mMenu.getSelectedItem() + " sebanyak " + mQuantity.getText()
+        + " seharga " + price);
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            finish();
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 }
